@@ -15,6 +15,7 @@ import {useUploadThing} from "@/lib/uploadthing";
 import {updateUser} from "@/lib/actions/user.actions";
 import {usePathname, useRouter} from "next/navigation";
 
+// Define the Props interface for this component.
 interface Props {
     user: {
         id: string;
@@ -27,12 +28,14 @@ interface Props {
     btnTitle: string;
 }
 
+// Create the AccountProfile component.
 const AccountProfile = ({user, btnTitle}: Props) => {
     const [files, setFiles] = useState<File[]>([]);
     const {startUpload} = useUploadThing("media");
     const router = useRouter();
     const pathname = usePathname();
 
+    // Initialize the form using react-hook-form with validation schema and default values.
     const form = useForm({
         resolver: zodResolver(UserValidation),
         defaultValues: {
@@ -43,43 +46,48 @@ const AccountProfile = ({user, btnTitle}: Props) => {
         }
     });
 
-    const handleImage = (e: ChangeEvent<HTMLInputElement>, fieldChange: (value: string) => void) => {
-        e.preventDefault(); // prevent browser reload
+    // Handle image selection and conversion to base64 data URL.
+    const handleImage = (
+        e: ChangeEvent<HTMLInputElement>,
+        fieldChange: (value: string) => void
+        ) => {
+            e.preventDefault(); // prevent browser reload
 
-        const fileReader = new FileReader(); // initialize file reader
+            const fileReader = new FileReader(); // initialize file reader
 
-        // if there is somehing
-        if (e.target.files && e.target.files.length > 0) { // check if the file actually exists
-            const file = e.target.files[0];
+            // if there is somehing
+            if (e.target.files && e.target.files.length > 0) { // check if the file actually exists
+                const file = e.target.files[0];
 
-            setFiles(Array.from(e.target.files));
+                setFiles(Array.from(e.target.files));
 
-            if(!file.type.includes('image')) return;
+                if(!file.type.includes('image')) return;
 
-            fileReader.onload = async(event) => {
-                const imageDataUrl = event.target?.result?.toString() || '';
+                fileReader.onload = async(event) => {
+                    const imageDataUrl = event.target?.result?.toString() || '';
 
-                fieldChange(imageDataUrl);
+                    fieldChange(imageDataUrl);
+                }
+
+                fileReader.readAsDataURL(file);
             }
+        };
 
-            fileReader.readAsDataURL(file);
-        }
-    }
+        // Submit handler for form submission.
+        const onSubmit = async(values: z.infer<typeof UserValidation>) => {
+            const blob = values.profile_photo;
 
-    // Submit handler. Reupload the new image and update the user info in the database.
-    const onSubmit = async(values: z.infer<typeof UserValidation>) => {
-        const blob = values.profile_photo;
+            const hasImageChanged = isBase64Image(blob);
 
-        const hasImageChanged = isBase64Image(blob);
+            if(hasImageChanged) {
+                const imgRes = await startUpload(files);
 
-        if(hasImageChanged) {
-            const imgRes = await startUpload(files);
+                if(imgRes && imgRes[0].url) {
+                    values.profile_photo = imgRes[0].url;
+                }
+            };
 
-            if(imgRes && imgRes[0].url) {
-                values.profile_photo = imgRes[0].url;
-            }
-        }
-
+        // Update user information in the database.
         await updateUser({
             userId: user.id,
             username: values.username,
@@ -90,13 +98,15 @@ const AccountProfile = ({user, btnTitle}: Props) => {
         })
 
         if(pathname === "/profile/edit") {
+            // Navigate back if the current path is "/profile/edit".
             router.back();
         } else {
+            // Navigate to the homepage ("/") if the current path is different.
             router.push("/");
         }
     }
 
-    // Entire form is renedered below.
+    // Render the entire form.
     return (
         <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col justify-start gap-10">
@@ -136,6 +146,7 @@ const AccountProfile = ({user, btnTitle}: Props) => {
                             onChange={(e) => handleImage(e, field.onChange)}
                         />
                     </FormControl>
+                    <FormMessage />
                     </FormItem>
                 )}
                 />
@@ -155,6 +166,7 @@ const AccountProfile = ({user, btnTitle}: Props) => {
                             {...field}
                         />
                     </FormControl>
+                    <FormMessage />
                     </FormItem>
                 )}
                 />
@@ -174,6 +186,7 @@ const AccountProfile = ({user, btnTitle}: Props) => {
                             {...field}
                         />
                     </FormControl>
+                    <FormMessage />
                     </FormItem>
                 )}
                 />
@@ -193,6 +206,7 @@ const AccountProfile = ({user, btnTitle}: Props) => {
                             {...field}
                         />
                     </FormControl>
+                    <FormMessage />
                     </FormItem>
                 )}
                 />

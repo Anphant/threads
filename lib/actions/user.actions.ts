@@ -1,9 +1,10 @@
 "use server"; // to indicate we're using server actions
-
+import {revalidatePath} from "next/cache";
 import { use } from "react";
 import User from "../models/user.model";
 import {connectToDB} from "../mongoose";
 
+// Define the interface for the parameters required by the `updateUser` function.
 interface Params {
     userId: string;
     username: string;
@@ -13,7 +14,7 @@ interface Params {
     path: string;
 }
 
-// Values were destructured 
+// Define the `updateUser` function to update user information in the database.
 export async function updateUser({
     userId,
     username,
@@ -22,9 +23,11 @@ export async function updateUser({
     image,
     path,
 }: Params): Promise<void>{
+    // Connect to the database.
     connectToDB();
 
     try {
+        // Update the user document in the database using the User model.
         await User.findOneAndUpdate(
             {id: userId},
             {
@@ -34,16 +37,34 @@ export async function updateUser({
                 image,
                 onboarded: true,
             },
-            { upsert: true}
+            {upsert: true} // Create the document if it doesn't exist.
         );
 
         if (path === "/profile/edit") {
-            // Allows us to revalidate data associated with a specific path.
-            // Useful for scenarios where you want to update your cached data
+            // Revalidate data associated with a specific path.
+            // Useful for scenarios where you want to update cached data
             // without waiting for a revalidation period to expire.
             revalidatePath(path);
         }
     } catch(error: any) {
+        // Handle any errors that occur during the database update.
         throw new Error(`Failed to create/update user: ${error.message}`)
+    }
+}
+// Define the `fetchUser` function to retrieve user information from the database by userId.
+export async function fetchUser(userId: string) {
+    try {
+        connectToDB();
+
+        // Find and retrieve the user document from the database based on the provided userId.
+        return await User
+            .findOneAndUpdate({id: userId})
+            // .populate({
+            //     path: "communities",
+            //     model: "Community"
+            // })
+    } catch (error: any) {
+        // Handle any errors that occur during the database retrieval.
+        throw new Error(`Failed to fetch user: ${error.message}`);
     }
 }
