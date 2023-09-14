@@ -3,7 +3,6 @@ import {fetchUser} from "@/lib/actions/user.actions";
 import {currentUser} from "@clerk/nextjs";
 import {redirect} from "next/navigation";
 
-// Define an asynchronous function called Page.
 async function Page() {
     // Use the currentUser function to get the current user.
     const user = await currentUser();
