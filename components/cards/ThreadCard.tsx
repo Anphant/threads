@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 
+// Define the interface for the props of ThreadCard component
 interface Props {
     id: string,
     currentUserId: string;
@@ -22,9 +23,10 @@ interface Props {
             image: string;
         }
     }[];
-    isComment?: boolean;
+    isComment?: boolean;    // Flag to determine if current card is a comment or a main thread
 }
 
+// ThreadCard component displays threads or comments in a styled card format
 const ThreadCard = ({
     id,
     currentUserId,
@@ -37,7 +39,7 @@ const ThreadCard = ({
     isComment,
 }: Props) => {
     return (
-        <article className="flex w-full flex-col rounded-xl bg-dark-2 p-7">
+        <article className={`flex w-full flex-col rounded-xl ${isComment ? 'px-0 xs:px-7' : 'bg-dark-2 p-7'}`}>
             <div className="flex items-start justify-between">
                 <div className="flex w-full flex-1 flex-row gap-4">
                     <div className="flex flex-col items-center">
