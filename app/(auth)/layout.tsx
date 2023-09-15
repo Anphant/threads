@@ -8,21 +8,21 @@ export const metadata = {
     description: 'An inspired clone of Threads by Meta Platforms, based on Next.js.'
 }
 
-const inter = Inter({subsets: ["latin"]}) // Define 'Inter' font from Google
+const inter = Inter({subsets: ["latin"]}) // Define the 'Inter' font from Google with the "latin" subset
 
 export default function RootLayout({
-        children    // Props
+        children // This is a prop, which represents child components passed to this component
     }: {
-        children: React.ReactNode   // Types of the props
+        children: React.ReactNode // Define the type for the children prop
     }) {
         return (
 
-        // The <ClerkProvider /> component wraps your Next.js application to provide
-        // active session and user context to Clerk's hooks and other components.
+        // The <ClerkProvider /> component wraps the Next.js application.
+        // This provides active session and user context to Clerk's hooks and other components.
             <ClerkProvider>
                 <html lang="en">
                     <body className={`${inter.className} bg-dark-1`}>
-                        <div className="w-full flex justify-center items-center min-h-screen">
+                        <div className="w-full flex justify-center items-center">
                             {children}
                         </div>
                     </body>

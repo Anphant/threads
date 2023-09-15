@@ -1,16 +1,26 @@
 import { currentUser } from "@clerk/nextjs";
 import { redirect } from "next/navigation";
 
-import { fetchUser } from "@/lib/actions/user.actions";
+import { fetchUser } from "@/lib/actions/user.actions"; // Get current logged in user details
 import AccountProfile from "@/components/forms/AccountProfile";
 
 async function Page() {
+   // Fetch the current user's details
   const user = await currentUser();
-  if (!user) return null; // to avoid typescript warnings
 
+  // If the user is not available, return null
+  // This is primarily to avoid typescript warnings for possible null values
+  if (!user) return null;
+
+  // Fetch additional user information based on the user's id
   const userInfo = await fetchUser(user.id);
+
+  // If the user is already onboarded, redirect them to the home page
   if (userInfo?.onboarded) redirect("/");
 
+  // Prepare the user data for the AccountProfile component.
+  // The code checks for the presence of userInfo data. 
+  // If it's not available, it falls back to the user's default values.
   const userData = {
     id: user.id,
     objectId: userInfo?._id,
@@ -20,11 +30,12 @@ async function Page() {
     image: userInfo ? userInfo?.image : user.imageUrl,
   };
 
+  // Render the onboarding page for the user
   return (
     <main className='mx-auto flex max-w-3xl flex-col justify-start px-10 py-20'>
       <h1 className='head-text'>Onboarding</h1>
       <p className='mt-3 text-base-regular text-light-2'>
-        Complete your profile now, to use Threds.
+        You look new. Before we get started, let's set up your Threads experience.
       </p>
 
       <section className='mt-9 bg-dark-2 p-10'>
@@ -35,39 +46,3 @@ async function Page() {
 }
 
 export default Page;
-
-// import AccountProfile from "@/components/forms/AccountProfile";
-// import {currentUser} from "@clerk/nextjs";
-
-// async function Page() {
-//     const user = await currentUser();
-
-//     const userInfo = {};
-
-//     const userData = {
-//         id: user?.id,
-//         objectID: userInfo?._id,
-//         username: userInfo?.username || user?.username,
-//         name: userInfo?.name || userInfo.firstName || "",
-//         bio: userInfo?.bio || "",
-//         image: userInfo?.image || userInfo.imageUrl,240688
-//     }
-
-//     return (
-//         <main className="mx-auto flex max-w-3xl flex-col justify-start px-10 py-20">
-//             <h1 className="head-text">Onboarding</h1>
-//             <p className="mt-3 text-base-regular text-light-2">
-//                 Personalize your Threads experience.
-//             </p>
-
-//             <section className="mt-9 bg-dark-2 p-10">
-//                 <AccountProfile 
-//                     user={userData} 
-//                     btnTitle="Continue" 
-//                 />
-//             </section>
-//         </main>
-//     )
-// }
-
-// export default Page;
