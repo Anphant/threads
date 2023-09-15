@@ -10,7 +10,7 @@ import Bottombar from '@/components/shared/Bottombar'
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata = {
-    title: 'Yarn',
+    title: 'Barn - Threads Clone',
     description: 'An inspired clone of Threads by Meta Platforms, based on Next.js.'
 }
 

@@ -13,7 +13,7 @@ const Page = async({params}: {params: {id: string}}) => {
     if(!user) return null;
 
     const userInfo = await fetchUser(user.id);
-    if(!userInfo.onboarded) redirect("/onboarding");
+    if(!userInfo?.onboarded) redirect("/onboarding");
 
     const thread = await fetchThreadById(params.id);
 
@@ -41,6 +41,7 @@ const Page = async({params}: {params: {id: string}}) => {
             />
         </div>
 
+        {/* Children Thread cards, appearing below the parent Thread post */}
         <div className="mt-10">
             {thread.children.map((childItem: any) => (
                 <ThreadCard 
