@@ -1,16 +1,33 @@
-import {SignedIn,SignOutButton,OrganizationSwitcher, UserButton} from "@clerk/nextjs";
+import { SignedIn, SignOutButton, OrganizationSwitcher, UserButton } from "@clerk/nextjs";
 import Image from "next/image";
 import Link from "next/link";
-import {dark} from "@clerk/themes";
+import { dark } from "@clerk/themes";
 
+// Define the Topbar component
 function Topbar() {
     return (
         <nav className="topbar">
+            {/* Logo and application name linking to the home page */}
             <Link href="/" className="flex items-center gap-4">
                 <Image src="/assets/logo.svg" alt="logo" width={28} height={28} />
                 <p className="text-heading3-bold text-light-1 max-xs:hidden">Barn</p>
             </Link>
+
+            {/* Organization switcher with custom appearance */}
+            <OrganizationSwitcher
+                appearance={{
+                    baseTheme: dark,
+                    elements: {
+                        organizationSwitcherTrigger: "py-2 px-4"
+                    },
+                    variables: {
+                        colorPrimary: "red",
+                    }
+                }}
+            />
+
             <div className="flex items-center gap-1">
+                {/* Sign-out button for mobile view */}
                 <div className="block md:hidden">
                     <SignedIn>
                         <SignOutButton>
@@ -26,23 +43,16 @@ function Topbar() {
                     </SignedIn>
                 </div>
 
+                {/* User profile button with name and custom appearance */}
                 <UserButton
                     appearance={{
                         baseTheme: dark,
-                    }
-                    }
-                />
-                <OrganizationSwitcher
-                    appearance={{
-                        baseTheme: dark,
-                        elements: {
-                            organizationSwitcherTrigger: "py-2 px-4"
-                        }
                     }}
+                    showName
                 />
             </div>
         </nav>
-    )
+    );
 }
 
 export default Topbar;

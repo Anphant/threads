@@ -8,6 +8,7 @@ interface Props {
     username: string;
     imgUrl: string;
     bio: string;
+    type?: string;
 }
 
 // ProfileHeader component represents the top header of a social media profile page
